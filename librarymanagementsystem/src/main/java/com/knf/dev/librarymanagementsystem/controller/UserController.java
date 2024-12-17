@@ -57,23 +57,16 @@ public class UserController {
 		}
 		return "read-books";
 	}
-	
 	@RequestMapping("/searchBook")
 	public String searchBook(@RequestParam("title") String keyword,
 	                         @RequestParam("page") Optional<Integer> page,
 	                         @RequestParam("size") Optional<Integer> size,
 	                         Model model) {
-
 	    int currentPage = page.orElse(1);
 	    int pageSize = size.orElse(5);
-
-	    // Gọi repository để tìm kiếm có phân trang
 	    Page<Book> bookPage = bookService.searchBooks(keyword, PageRequest.of(currentPage - 1, pageSize));
-
 	    model.addAttribute("books", bookPage);
 	    model.addAttribute("keyword", keyword);
-
-	    // Tạo danh sách các số trang
 	    int totalPages = bookPage.getTotalPages();
 	    if (totalPages > 0) {
 	        List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
@@ -81,31 +74,21 @@ public class UserController {
 	                .collect(Collectors.toList());
 	        model.addAttribute("pageNumbers", pageNumbers);
 	    }
-
 	    return "read-books";
 	}
-
-
-
+	
+	
 	
 	@RequestMapping("/choose-book/{id}")
 	public String chooseBook(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
 	    try {
-	        bookService.chooseBook(id);  // Gọi service chọn sách
+	        bookService.chooseBook(id);
 	        Book book = bookService.findBookById(id);
-	        redirectAttributes.addFlashAttribute("message", "Bạn đã lấy sách " + book.getName());  // Thêm thông báo thành công
+	        redirectAttributes.addFlashAttribute("message", "Bạn đã lấy sách " + book.getName());
 	    } catch (Exception e) {
-	        redirectAttributes.addFlashAttribute("error", "Hết sách");  // Thêm thông báo lỗi
+	        redirectAttributes.addFlashAttribute("error", "Hết sách");
 	    }
-
-	    return "redirect:/reads";  // Chuyển hướng đến trang đọc
+	    return "redirect:/reads";
 	}
-
-//	@RequestMapping("/searchBook")
-//	public String searchBook(@Param("keyword") String keyword, Model model) {
-//
-//		model.addAttribute("books", bookService.searchBooks(keyword));
-//		model.addAttribute("keyword", keyword);
-//		return "read-books";
 //	}
 }

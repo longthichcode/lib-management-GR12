@@ -46,16 +46,13 @@ public class FileServiceImpl implements FileService {
     public void exportCSV(String fileName, HttpServletResponse response)
             throws CsvDataTypeMismatchException, CsvRequiredFieldEmptyException, IOException {
         var item = Item.getItemByValue(fileName);
-
         // Đặt mã hóa UTF-8 và tiêu đề phản hồi
         response.setContentType("text/csv; charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + item.get().getFileName() + "\"");
-
         // Thêm BOM để hỗ trợ Excel
         response.getOutputStream().write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
-
         try (Writer writer = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
             switch (item.get()) {
                 case BOOK:
@@ -79,11 +76,10 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
-
     private static <T> StatefulBeanToCsv<T> getWriter(Writer writer) {
         return new StatefulBeanToCsvBuilder<T>(writer)
-                .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER) // Bao giá trị trong dấu ngoặc kép
-                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)       // Dấu phân cách là dấu phẩy
+                .withQuotechar(CSVWriter.DEFAULT_QUOTE_CHARACTER) 
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)      
                 .withOrderedResults(false)
                 .build();
     }
