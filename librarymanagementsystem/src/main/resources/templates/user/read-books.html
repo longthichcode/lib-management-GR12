@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>Xem Sách</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+</head>
+
+<body>
+    <nav th:fragment="header" class="navbar navbar-expand-sm navbar-light" style="background-color:#023b6d">
+		<a class="navbar-brand ms-2 text-info" href="#">Thư viện</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item" sec:authorize="isAuthenticated()">
+					<a class="nav-link text-light" href="/authors">Tác giả</a>
+				</li>
+				<li class="nav-item" sec:authorize="isAuthenticated()">
+					<a class="nav-link text-light" href="/categories">Danh mục</a>
+				</li>
+				<li class="nav-item" sec:authorize="isAuthenticated()">
+					<a class="nav-link text-light" href="/publishers">Nhà xuất bản</a>
+				</li>
+			</ul>
+			<ul class="navbar-nav ms-auto me-2">
+				<li class="nav-item" sec:authorize="isAuthenticated()">
+					<a class="nav-link text-light" th:href="@{/logout}">Đăng xuất</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+    <div class="container my-5">
+		<div th:if="${books != null}" class="container my-5">
+			<div class="col-md-12">
+				<h2 class="text-center mb-4">Danh Sách Sách</h2>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>ISBN</th>
+							<th>Tên Sách</th>
+							<th>Tên Bộ Sách</th>
+							<th>Mô Tả</th>
+							<th>Số Lượng</th>
+							<th>Tác giả</th>
+							<th>Danh mục</th>
+							<th>Nhà xuất bản</th>
+							<th>Chọn</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="book : ${books.content}">
+							<td th:text="${book.isbn}"></td>
+							<td th:text="${book.name}"></td>
+							<td th:text="${book.serialName}"></td>
+							<td th:text="${book.description}"></td>
+							<td th:text="${book.quantity}"></td>
+							<td>
+								<ul>
+									<li th:each="author : ${book.authors}" th:text="${author.name}"></li>
+								</ul>
+							</td>
+							<td>
+								<ul>
+									<li th:each="category : ${book.categories}" th:text="${category.name}"></li>
+								</ul>
+							</td>
+							<td th:text="${book.publisher.name}"></td>
+							<td><a th:href="@{/remove-book/{id}(id=${book.id})}" class="btn btn-success"><i class="fas fa-check ml-2"></i></a></td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<!-- Phân trang -->
+				<ul th:if="${books.totalPages > 1}" class="pagination">
+					<li class="page-item" th:each="pageNumber : ${pageNumbers}" 
+						th:classappend="${pageNumber == books.number + 1} ? 'active'">
+						<a class="page-link" th:href="@{/reads(size=${books.size}, page=${pageNumber})}" 
+						   th:text="${pageNumber + 1}"></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
